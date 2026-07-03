@@ -1,0 +1,68 @@
+{{define "formula_install"}}bin.install "{{bin_name .}}"{{end}}
+
+{{define "formula_test"}}assert_match "Driver:.*{{.}}", shell_output("#{bin}/{{bin_name .}} version 2>&1", 2){{end}}
+
+{{define "formula" -}}
+class {{.ClassName}} < Formula
+  {{$num_drivers := len .Drivers -}}
+  {{$desc := "Godfish database migration tool" -}}
+  {{if eq $num_drivers 1 -}}
+  {{$desc = printf "Godfish database migration tool for %s" (index .Drivers 0) -}}
+  {{end -}}
+  desc "{{$desc}}"
+  homepage "https://github.com/rafaelespinoza/godfish"
+  version "{{.Version}}"
+  license "ISC"
+
+  if OS.mac? && Hardware::CPU.intel?
+    {{$release := .ReleaseAssets.MacOSIntel -}}
+    url "{{$release.URL}}"
+    sha256 "{{$release.SHA256}}"
+  end
+
+  if OS.mac? && Hardware::CPU.arm?
+    {{$release := .ReleaseAssets.MacOSARM -}}
+    url "{{$release.URL}}"
+    sha256 "{{$release.SHA256}}"
+  end
+
+  if OS.linux? && Hardware::CPU.intel?
+    {{$release := .ReleaseAssets.LinuxIntel -}}
+    url "{{$release.URL}}"
+    sha256 "{{$release.SHA256}}"
+  end
+
+  if OS.linux? && Hardware::CPU.arm?
+    {{$release := .ReleaseAssets.LinuxARM -}}
+    url "{{$release.URL}}"
+    sha256 "{{$release.SHA256}}"
+  end
+
+  # TODO: figure out how to detect a Windows-like platform for Homebrew.
+  # if OS.wsl? && Hardware::CPU.intel?
+  #   {{$release := .ReleaseAssets.WSLIntel -}}
+  #   url "{{$release.URL}}"
+  #   sha256 "{{$release.SHA256}}"
+  # end
+
+  # if OS.wsl? && Hardware::CPU.arm?
+  #   {{$release := .ReleaseAssets.WSLARM -}}
+  #   url "{{$release.URL}}"
+  #   sha256 "{{$release.SHA256}}"
+  # end
+
+  def install
+    # Homebrew extracts the entire multi-binary archive. Cherry-pick only
+    # the targeted binary into the installation path
+    {{- range .Drivers}}
+    {{template "formula_install" .}}
+    {{- end}}
+  end
+
+  test do
+    {{- range .Drivers}}
+    {{template "formula_test" .}}
+    {{- end}}
+  end
+end
+{{end}}
