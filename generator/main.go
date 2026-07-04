@@ -19,7 +19,7 @@ import (
 // parameters are the input flags to this command.
 type parameters struct {
 	Outdir     string
-	ReleaseTag string
+	ReleaseTag *string
 	LogLevel   string
 }
 
@@ -29,7 +29,7 @@ func init() {
 	const defaultOutdir = "Formula/"
 
 	flag.StringVar(&arguments.Outdir, "outdir", filepath.Clean(defaultOutdir), "output directory to place generated formula files")
-	flag.StringVar(&arguments.ReleaseTag, "tag", "", "which release tag to source from; if empty, latest is assumed")
+	arguments.ReleaseTag = flag.String("tag", "", "which release tag to source from; if empty, latest is assumed")
 	flag.StringVar(&arguments.LogLevel, "loglevel", "", "logging level")
 	flag.Usage = func() {
 		fmt.Fprintf(flag.CommandLine.Output(), `Usage: %s [flags] <action>
@@ -58,6 +58,9 @@ Flags:
 
 func main() {
 	flag.Parse()
+	if t := arguments.ReleaseTag; t != nil && *t == "" {
+		arguments.ReleaseTag = nil
+	}
 
 	slogHandler := newSlogHandler(arguments.LogLevel)
 	slog.SetDefault(slog.New(slogHandler))
@@ -85,7 +88,13 @@ func newSlogHandler(requestedLevel string) slog.Handler {
 }
 
 func chooseRunSubcmd(ctx context.Context, f *flag.FlagSet, p parameters, r io.Reader, w io.Writer) error {
-	switch cmd := strings.ToLower(f.Arg(0)); cmd {
+	subcmd := strings.ToLower(f.Arg(0))
+	slog.DebugContext(ctx, "from chooseRunSubcmd",
+		slog.String("subcmd", subcmd),
+		slog.Any("p", p),
+		slog.Any("flag_args", f.Args()),
+	)
+	switch subcmd {
 	case "fetch-generate", "fg":
 		subFS, err := loadTemplatesSubdir()
 		if err != nil {
@@ -93,11 +102,7 @@ func chooseRunSubcmd(ctx context.Context, f *flag.FlagSet, p parameters, r io.Re
 		}
 		return internal.FetchReleaseGenerateFormulae(ctx, p.ReleaseTag, subFS, p.Outdir)
 	case "fetch-release", "fetch", "f":
-		var releaseTag *string
-		if t := p.ReleaseTag; t != "" {
-			releaseTag = &t
-		}
-		return fetchRelease(ctx, w, releaseTag)
+		return fetchRelease(ctx, w, p.ReleaseTag)
 	case "generate-formulae", "generate-formula", "generate", "gen", "g":
 		subFS, err := loadTemplatesSubdir()
 		if err != nil {
@@ -105,7 +110,6 @@ func chooseRunSubcmd(ctx context.Context, f *flag.FlagSet, p parameters, r io.Re
 		}
 		return generateFormulae(r, subFS, p.Outdir)
 	default:
-		slog.Debug("received cmd", slog.String("cmd", cmd), slog.Any("args", f.Args()))
 		f.Usage()
 		return nil
 	}

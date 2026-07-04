@@ -8,12 +8,8 @@ import (
 	"log/slog"
 )
 
-func FetchReleaseGenerateFormulae(ctx context.Context, releaseTag string, templateDirFS fs.FS, outDir string) error {
-	var tag *string
-	if releaseTag != "" {
-		tag = &releaseTag
-	}
-	releaseData, err := FetchGithubRelease(ctx, tag)
+func FetchReleaseGenerateFormulae(ctx context.Context, releaseTag *string, templateDirFS fs.FS, outDir string) error {
+	releaseData, err := FetchGithubRelease(ctx, releaseTag)
 	if err != nil {
 		return fmt.Errorf("fetching gh release: %w", err)
 	}
