@@ -9,7 +9,7 @@ import (
 	"text/template"
 )
 
-func makeFormulaeFiles(templateDir, outdir string, releaseData *githubRelease) error {
+func MakeFormulaeFiles(templateDir, outdir string, releaseData *GithubRelease) error {
 	root, err := os.OpenRoot(templateDir)
 	if err != nil {
 		return fmt.Errorf("opening root: %w", err)
@@ -64,6 +64,7 @@ func makeFormulaeFiles(templateDir, outdir string, releaseData *githubRelease) e
 		}
 	}
 
+	slog.Info("ok, see results at directory", slog.String("directory", outdir))
 	return nil
 }
 
@@ -93,7 +94,7 @@ type templateReleaseAssets struct {
 	WSLARM     tmplReleaseOnPlatform
 }
 
-func templatizeReleaseAssets(in []githubReleaseAsset) (*templateReleaseAssets, error) {
+func templatizeReleaseAssets(in []GithubReleaseAsset) (*templateReleaseAssets, error) {
 	var out templateReleaseAssets
 	const darwin, linux, windows = "darwin", "linux", "windows"
 	const amd64, arm64 = "amd64", "arm64"

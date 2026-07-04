@@ -15,12 +15,12 @@ import (
 	"time"
 )
 
-type githubRelease struct {
+type GithubRelease struct {
 	TagName string               `json:"tag_name"`
-	Assets  []githubReleaseAsset `json:"assets"`
+	Assets  []GithubReleaseAsset `json:"assets"`
 }
 
-type githubReleaseAsset struct {
+type GithubReleaseAsset struct {
 	Name               string    `json:"name"`
 	Size               int64     `json:"size"`
 	Digest             *string   `json:"digest"`
@@ -33,7 +33,7 @@ type githubReleaseAsset struct {
 
 const repoOwner, repoName = "rafaelespinoza", "godfish"
 
-func fetchGithubRelease(ctx context.Context, tag *string) (*githubRelease, error) {
+func FetchGithubRelease(ctx context.Context, tag *string) (*GithubRelease, error) {
 	httpClient := http.Client{}
 	reqURL := "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/releases"
 	if tag != nil {
@@ -83,7 +83,7 @@ func fetchGithubRelease(ctx context.Context, tag *string) (*githubRelease, error
 		return nil, fmt.Errorf("unexpected response code (%d): %w", resp.StatusCode, err)
 	}
 
-	var release githubRelease
+	var release GithubRelease
 	if err := json.NewDecoder(resp.Body).Decode(&release); err != nil {
 		return nil, fmt.Errorf("decoding release json: %w", err)
 	}
