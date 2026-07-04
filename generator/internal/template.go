@@ -68,16 +68,6 @@ func MakeFormulaeFiles(templateDir, outdir string, releaseData *GithubRelease) e
 	return nil
 }
 
-func generateFormulaFile(outfile string, tmpl *template.Template, formula templateFormula) error {
-	file, err := os.Create(outfile)
-	if err != nil {
-		return fmt.Errorf("creating file prior to generation: %w", err)
-	}
-	defer file.Close()
-
-	return tmpl.ExecuteTemplate(file, "formula", formula)
-}
-
 type templateFormula struct {
 	ClassName     string
 	Drivers       []string
@@ -86,12 +76,17 @@ type templateFormula struct {
 }
 
 type templateReleaseAssets struct {
-	MacOSIntel tmplReleaseOnPlatform
-	MacOSARM   tmplReleaseOnPlatform
-	LinuxIntel tmplReleaseOnPlatform
-	LinuxARM   tmplReleaseOnPlatform
-	WSLIntel   tmplReleaseOnPlatform
-	WSLARM     tmplReleaseOnPlatform
+	MacOSIntel templateReleaseOnPlatform
+	MacOSARM   templateReleaseOnPlatform
+	LinuxIntel templateReleaseOnPlatform
+	LinuxARM   templateReleaseOnPlatform
+	WSLIntel   templateReleaseOnPlatform
+	WSLARM     templateReleaseOnPlatform
+}
+
+type templateReleaseOnPlatform struct {
+	URL    string
+	SHA256 string
 }
 
 func templatizeReleaseAssets(in []GithubReleaseAsset) (*templateReleaseAssets, error) {
@@ -104,27 +99,27 @@ func templatizeReleaseAssets(in []GithubReleaseAsset) (*templateReleaseAssets, e
 
 		if strings.Contains(gra.Name, darwin) {
 			if strings.Contains(gra.Name, amd64) {
-				out.MacOSIntel = tmplReleaseOnPlatform{URL: gra.BrowserDownloadURL, SHA256: sha256}
+				out.MacOSIntel = templateReleaseOnPlatform{URL: gra.BrowserDownloadURL, SHA256: sha256}
 			} else if strings.Contains(gra.Name, arm64) {
-				out.MacOSARM = tmplReleaseOnPlatform{URL: gra.BrowserDownloadURL, SHA256: sha256}
+				out.MacOSARM = templateReleaseOnPlatform{URL: gra.BrowserDownloadURL, SHA256: sha256}
 			} else {
 				err := fmt.Errorf("asset name %q did not contain an expected architecture %q", gra.Name, []string{amd64, arm64})
 				return nil, err
 			}
 		} else if strings.Contains(gra.Name, linux) {
 			if strings.Contains(gra.Name, amd64) {
-				out.LinuxIntel = tmplReleaseOnPlatform{URL: gra.BrowserDownloadURL, SHA256: sha256}
+				out.LinuxIntel = templateReleaseOnPlatform{URL: gra.BrowserDownloadURL, SHA256: sha256}
 			} else if strings.Contains(gra.Name, arm64) {
-				out.LinuxARM = tmplReleaseOnPlatform{URL: gra.BrowserDownloadURL, SHA256: sha256}
+				out.LinuxARM = templateReleaseOnPlatform{URL: gra.BrowserDownloadURL, SHA256: sha256}
 			} else {
 				err := fmt.Errorf("asset name %q did not contain an expected architecture %q", gra.Name, []string{amd64, arm64})
 				return nil, err
 			}
 		} else if strings.Contains(gra.Name, windows) {
 			if strings.Contains(gra.Name, amd64) {
-				out.WSLIntel = tmplReleaseOnPlatform{URL: gra.BrowserDownloadURL, SHA256: sha256}
+				out.WSLIntel = templateReleaseOnPlatform{URL: gra.BrowserDownloadURL, SHA256: sha256}
 			} else if strings.Contains(gra.Name, arm64) {
-				out.WSLARM = tmplReleaseOnPlatform{URL: gra.BrowserDownloadURL, SHA256: sha256}
+				out.WSLARM = templateReleaseOnPlatform{URL: gra.BrowserDownloadURL, SHA256: sha256}
 			} else {
 				err := fmt.Errorf("asset name %q did not contain an expected architecture %q", gra.Name, []string{amd64, arm64})
 				return nil, err
@@ -138,10 +133,12 @@ func templatizeReleaseAssets(in []GithubReleaseAsset) (*templateReleaseAssets, e
 	return &out, nil
 }
 
-type tmplReleaseOnPlatform struct {
-	URL    string
-	SHA256 string
+func generateFormulaFile(outfile string, tmpl *template.Template, formula templateFormula) error {
+	file, err := os.Create(outfile)
+	if err != nil {
+		return fmt.Errorf("creating file prior to generation: %w", err)
+	}
+	defer file.Close()
 
-	platform string
-	hostArch string
+	return tmpl.ExecuteTemplate(file, "formula", formula)
 }
