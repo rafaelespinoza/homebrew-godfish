@@ -27,6 +27,7 @@ alias r := runbin
 modtidy:
   {{ GO }} -C generator mod tidy
 
+# see if the formula installation works
 [group("brew")]
 testinstall driver *args:
   #!/bin/sh
@@ -36,3 +37,8 @@ testinstall driver *args:
   else
     brew install --build-from-source {{ args }} "rafaelespinoza/godfish/godfish_${driver}"
   fi
+
+# run styleguide linter
+[group("brew")]
+checkstyle *args:
+  brew style {{ args }} .
