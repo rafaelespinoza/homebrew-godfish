@@ -42,6 +42,6 @@ class GodfishSqlserver < Formula
   end
 
   test do
-    assert_match "Driver:.*sqlserver", shell_output("#{bin}/godfish_sqlserver version 2>&1", 2)
+    assert_match(/Driver:.*sqlserver/, shell_output("#{bin}/godfish_sqlserver version 2>&1"))
   end
 end

@@ -42,6 +42,6 @@ class GodfishSqlite3 < Formula
   end
 
   test do
-    assert_match "Driver:.*sqlite3", shell_output("#{bin}/godfish_sqlite3 version 2>&1", 2)
+    assert_match(/Driver:.*sqlite3/, shell_output("#{bin}/godfish_sqlite3 version 2>&1"))
   end
 end

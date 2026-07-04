@@ -42,6 +42,6 @@ class GodfishPostgres < Formula
   end
 
   test do
-    assert_match "Driver:.*postgres", shell_output("#{bin}/godfish_postgres version 2>&1", 2)
+    assert_match(/Driver:.*postgres/, shell_output("#{bin}/godfish_postgres version 2>&1"))
   end
 end

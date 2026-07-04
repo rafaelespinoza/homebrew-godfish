@@ -1,6 +1,10 @@
-{{define "formula_install"}}bin.install "{{bin_name .}}"{{end}}
+{{define "formula_install" -}}
+bin.install "{{bin_name .}}"
+{{- end}}
 
-{{define "formula_test"}}assert_match "Driver:.*{{.}}", shell_output("#{bin}/{{bin_name .}} version 2>&1", 2){{end}}
+{{define "formula_test" -}}
+assert_match(/Driver:.*{{.}}/, shell_output("#{bin}/{{bin_name .}} version 2>&1"))
+{{- end}}
 
 {{define "formula" -}}
 class {{.ClassName}} < Formula

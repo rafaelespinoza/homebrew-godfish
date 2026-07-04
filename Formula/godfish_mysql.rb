@@ -42,6 +42,6 @@ class GodfishMysql < Formula
   end
 
   test do
-    assert_match "Driver:.*mysql", shell_output("#{bin}/godfish_mysql version 2>&1", 2)
+    assert_match(/Driver:.*mysql/, shell_output("#{bin}/godfish_mysql version 2>&1"))
   end
 end

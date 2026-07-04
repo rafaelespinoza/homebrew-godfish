@@ -42,6 +42,6 @@ class GodfishCassandra < Formula
   end
 
   test do
-    assert_match "Driver:.*cassandra", shell_output("#{bin}/godfish_cassandra version 2>&1", 2)
+    assert_match(/Driver:.*cassandra/, shell_output("#{bin}/godfish_cassandra version 2>&1"))
   end
 end

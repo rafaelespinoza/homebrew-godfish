@@ -46,10 +46,10 @@ class Godfish < Formula
   end
 
   test do
-    assert_match "Driver:.*cassandra", shell_output("#{bin}/godfish_cassandra version 2>&1", 2)
-    assert_match "Driver:.*postgres", shell_output("#{bin}/godfish_postgres version 2>&1", 2)
-    assert_match "Driver:.*mysql", shell_output("#{bin}/godfish_mysql version 2>&1", 2)
-    assert_match "Driver:.*sqlite3", shell_output("#{bin}/godfish_sqlite3 version 2>&1", 2)
-    assert_match "Driver:.*sqlserver", shell_output("#{bin}/godfish_sqlserver version 2>&1", 2)
+    assert_match(/Driver:.*cassandra/, shell_output("#{bin}/godfish_cassandra version 2>&1"))
+    assert_match(/Driver:.*postgres/, shell_output("#{bin}/godfish_postgres version 2>&1"))
+    assert_match(/Driver:.*mysql/, shell_output("#{bin}/godfish_mysql version 2>&1"))
+    assert_match(/Driver:.*sqlite3/, shell_output("#{bin}/godfish_sqlite3 version 2>&1"))
+    assert_match(/Driver:.*sqlserver/, shell_output("#{bin}/godfish_sqlserver version 2>&1"))
   end
 end
