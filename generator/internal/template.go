@@ -14,6 +14,13 @@ func MakeFormulaeFiles(templateDirFS fs.FS, outdir string, releaseData *GithubRe
 	funcs := template.FuncMap{
 		"bin_name": func(driverName string) string { return "godfish_" + driverName },
 		"join":     strings.Join,
+		"quote_conflicting_formulae": func(driverNames []string) []string {
+			out := make([]string, len(driverNames))
+			for i, val := range driverNames {
+				out[i] = fmt.Sprintf("%q", "godfish_"+val)
+			}
+			return out
+		},
 	}
 	tmpl, err := template.New("root").Funcs(funcs).ParseFS(templateDirFS, "*.rb.tmpl")
 	if err != nil {

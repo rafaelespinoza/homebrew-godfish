@@ -17,6 +17,17 @@ class {{.ClassName}} < Formula
   homepage "https://github.com/rafaelespinoza/godfish"
   version "{{.Version}}"
   license "ISC"
+  {{if eq $num_drivers 1 -}}
+  {{$name_of_bin := bin_name (index .Drivers 0) -}}
+  {{$reason := printf "the godfish formula already install the binary, %s" $name_of_bin -}}
+  conflicts_with "godfish", because: "{{$reason}}"
+  {{- else -}}
+  {{$driver_formulae_names := quote_conflicting_formulae .Drivers -}}
+  conflicts_with(
+    {{join $driver_formulae_names ",\n    "}},
+    because: "each driver formula (godfish_*) already installs a binary of the same name",
+  )
+  {{- end}}
 
   if OS.mac? && Hardware::CPU.intel?
     {{$release := .ReleaseAssets.MacOSIntel -}}

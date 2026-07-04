@@ -3,6 +3,7 @@ class GodfishSqlserver < Formula
   homepage "https://github.com/rafaelespinoza/godfish"
   version "0.15.0"
   license "ISC"
+  conflicts_with "godfish", because: "the godfish formula already install the binary, godfish_sqlserver"
 
   if OS.mac? && Hardware::CPU.intel?
     url "https://github.com/rafaelespinoza/godfish/releases/download/v0.15.0/godfish_0.15.0_darwin_amd64.tar.gz"
