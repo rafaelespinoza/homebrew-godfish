@@ -1,0 +1,41 @@
+name: brew install test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  driver:
+    strategy:
+      matrix:
+        os:
+          - ubuntu-24.04
+          - ubuntu-26.04
+          - macos-14
+          - macos-15
+          - macos-26
+        formula:
+          - godfish
+          - godfish_cassandra
+          - godfish_mysql
+          - godfish_postgres
+          - godfish_sqlite3
+          - godfish_sqlserver
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+    env:
+      FORMULA_NAME: ${{ github.repository }}/${{ matrix.formula }}
+    steps:
+      - name: Set up Homebrew
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@main
+        with:
+          token: ${{ github.token }}
+      - name: Install formula
+        run: brew install --build-from-source "${FORMULA_NAME:?missing env var FORMULA_NAME}"
+      - name: Test formula
+        run: brew test "${FORMULA_NAME:?missing env var FORMULA_NAME}"
+      - name: Remove formula
+        if: always()
+        run: brew remove "${FORMULA_NAME:?missing env var FORMULA_NAME}"
