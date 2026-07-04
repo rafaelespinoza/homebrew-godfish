@@ -52,7 +52,7 @@ class {{.ClassName}} < Formula
     url "{{$release.URL}}"
     sha256 "{{$release.SHA256}}"
   end
-
+  {{- /*
   # TODO: figure out how to detect a Windows-like platform for Homebrew.
   # if OS.wsl? && Hardware::CPU.intel?
   #   {{$release := .ReleaseAssets.WSLIntel -}}
@@ -65,10 +65,11 @@ class {{.ClassName}} < Formula
   #   url "{{$release.URL}}"
   #   sha256 "{{$release.SHA256}}"
   # end
+  */}}
 
   def install
     # Homebrew extracts the entire multi-binary archive. Cherry-pick only
-    # the targeted binary into the installation path
+    # the targeted binaries into the installation path
     {{- range .Drivers}}
     {{template "formula_install" .}}
     {{- end}}

@@ -25,20 +25,9 @@ class GodfishPostgres < Formula
     sha256 "b4fd5e3689812546b617f30d90d21f1d6d6da4f34e7d9b0f704e5c7a897460a3"
   end
 
-  # TODO: figure out how to detect a Windows-like platform for Homebrew.
-  # if OS.wsl? && Hardware::CPU.intel?
-  #   #   url "https://github.com/rafaelespinoza/godfish/releases/download/v0.15.0/godfish_0.15.0_windows_amd64.tar.gz"
-  #   sha256 "5fe7b8e37e31b3f27af23e38800fc06913a6b7faa463d7ef4504b643e27c6948"
-  # end
-
-  # if OS.wsl? && Hardware::CPU.arm?
-  #   #   url "https://github.com/rafaelespinoza/godfish/releases/download/v0.15.0/godfish_0.15.0_windows_arm64.tar.gz"
-  #   sha256 "3b010339f8226479eb0008de2981ecd4d52ff6a29c8a30a37f95cc60b5c3fd14"
-  # end
-
   def install
     # Homebrew extracts the entire multi-binary archive. Cherry-pick only
-    # the targeted binary into the installation path
+    # the targeted binaries into the installation path
     bin.install "godfish_postgres"
   end
 
