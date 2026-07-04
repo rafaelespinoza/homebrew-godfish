@@ -1,7 +1,7 @@
 class GodfishMysql < Formula
-  desc "Godfish database migration tool for mysql"
+  desc "Database migrations CLI for mysql"
   homepage "https://github.com/rafaelespinoza/godfish"
-  version "v0.15.0"
+  version "0.15.0"
   license "ISC"
 
   if OS.mac? && Hardware::CPU.intel?

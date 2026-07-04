@@ -22,8 +22,9 @@ func makeFormulaeFiles(templateDir, outdir string, releaseData *githubRelease) e
 
 	funcs := template.FuncMap{
 		"bin_name": func(driverName string) string { return "godfish_" + driverName },
+		"join":     strings.Join,
 	}
-	tmpl, err := template.New("root").Funcs(funcs).ParseFS(root.FS(), "*.tmpl.rb")
+	tmpl, err := template.New("root").Funcs(funcs).ParseFS(root.FS(), "*.rb.tmpl")
 	if err != nil {
 		return fmt.Errorf("parsing driver template fs: %w", err)
 	}
@@ -46,7 +47,8 @@ func makeFormulaeFiles(templateDir, outdir string, releaseData *githubRelease) e
 	}
 
 	for _, formula := range formulae {
-		formula.Version = releaseData.TagName
+		// the brew style guide does not like versions that begin with v
+		formula.Version = strings.TrimPrefix(releaseData.TagName, "v")
 		formula.ReleaseAssets = *releaseAssets
 
 		var outfileBasename string

@@ -5,9 +5,9 @@
 {{define "formula" -}}
 class {{.ClassName}} < Formula
   {{$num_drivers := len .Drivers -}}
-  {{$desc := "Godfish database migration tool" -}}
+  {{$desc := printf "Database migrations CLIs for %s" (join .Drivers ", ") -}}
   {{if eq $num_drivers 1 -}}
-  {{$desc = printf "Godfish database migration tool for %s" (index .Drivers 0) -}}
+  {{$desc = printf "Database migrations CLI for %s" (index .Drivers 0) -}}
   {{end -}}
   desc "{{$desc}}"
   homepage "https://github.com/rafaelespinoza/godfish"

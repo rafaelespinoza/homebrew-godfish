@@ -1,7 +1,7 @@
 class GodfishSqlite3 < Formula
-  desc "Godfish database migration tool for sqlite3"
+  desc "Database migrations CLI for sqlite3"
   homepage "https://github.com/rafaelespinoza/godfish"
-  version "v0.15.0"
+  version "0.15.0"
   license "ISC"
 
   if OS.mac? && Hardware::CPU.intel?
