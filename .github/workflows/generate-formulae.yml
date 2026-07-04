@@ -1,0 +1,40 @@
+name: test generate formulae
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test-formulae-generation:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v7
+      - name: Setup go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: generator/go.mod
+          cache: false
+      - name: Install just
+        uses: extractions/setup-just@v4
+      - name: Get dependencies
+        run: just modtidy
+      - name: Build binary
+        run: just buildbin
+      - name: Fetch release and generate formulae (one fell swoop)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: just runbin fetch-generate
+      - name: Assert no change (part 1)
+        run: .github/scripts/check_no_changes.sh Formula
+      - name: Fetch release then generate formulae (separately)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          declare -r release_json="${RUNNER_TEMP}/release.json"
+          just runbin fetch-release | tee "${release_json}"
+          just runbin generate-formulae < "${release_json}"
+      - name: Assert no change (part 2)
+        run: .github/scripts/check_no_changes.sh Formula
