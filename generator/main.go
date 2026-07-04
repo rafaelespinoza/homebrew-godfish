@@ -2,10 +2,12 @@ package main
 
 import (
 	"context"
+	"embed"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
+	"io/fs"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -14,16 +16,18 @@ import (
 	"github.com/rafaelespinoza/homebrew-godfish/internal"
 )
 
-var arguments struct {
-	TemplateDir string
-	Outdir      string
-	ReleaseTag  string
-	LogLevel    string
+// parameters are the input flags to this command.
+type parameters struct {
+	Outdir     string
+	ReleaseTag string
+	LogLevel   string
 }
+
+var arguments parameters
 
 func init() {
 	const defaultOutdir = "Formula/"
-	flag.StringVar(&arguments.TemplateDir, "templatedir", filepath.Clean("generator/templates"), "path to directory with templates")
+
 	flag.StringVar(&arguments.Outdir, "outdir", filepath.Clean(defaultOutdir), "output directory to place generated formula files")
 	flag.StringVar(&arguments.ReleaseTag, "tag", "", "which release tag to source from; if empty, latest is assumed")
 	flag.StringVar(&arguments.LogLevel, "loglevel", "", "logging level")
@@ -47,6 +51,7 @@ Actions:
 
 Flags:
 `, os.Args[0], defaultOutdir)
+
 		flag.CommandLine.PrintDefaults()
 	}
 }
@@ -57,26 +62,9 @@ func main() {
 	slogHandler := newSlogHandler(arguments.LogLevel)
 	slog.SetDefault(slog.New(slogHandler))
 
-	ctx := context.Background()
-	var err error
-	switch cmd := strings.ToLower(flag.Arg(0)); cmd {
-	case "fetch-generate", "fg":
-		err = internal.FetchReleaseGenerateFormulae(ctx, arguments.TemplateDir, arguments.Outdir, arguments.ReleaseTag)
-	case "fetch-release", "fetch", "f":
-		var releaseTag *string
-		if t := arguments.ReleaseTag; t != "" {
-			releaseTag = &t
-		}
-		err = fetchRelease(ctx, os.Stdout, releaseTag)
-	case "generate-formulae", "generate-formula", "generate", "gen", "g":
-		err = generateFormulae(arguments.TemplateDir, os.Stdin, arguments.Outdir)
-	default:
-		slog.Debug("received cmd", slog.String("cmd", cmd), slog.Any("args", flag.Args()))
-		flag.Usage()
-		return
-	}
+	err := chooseRunSubcmd(context.Background(), flag.CommandLine, arguments, os.Stdin, os.Stdout)
 	if err != nil {
-		slog.ErrorContext(ctx, "running command", slog.Any("error", err))
+		slog.Error("running command", slog.Any("error", err))
 		os.Exit(1)
 	}
 }
@@ -96,6 +84,44 @@ func newSlogHandler(requestedLevel string) slog.Handler {
 	return slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{Level: lvl})
 }
 
+func chooseRunSubcmd(ctx context.Context, f *flag.FlagSet, p parameters, r io.Reader, w io.Writer) error {
+	switch cmd := strings.ToLower(f.Arg(0)); cmd {
+	case "fetch-generate", "fg":
+		subFS, err := loadTemplatesSubdir()
+		if err != nil {
+			return err
+		}
+		return internal.FetchReleaseGenerateFormulae(ctx, p.ReleaseTag, subFS, p.Outdir)
+	case "fetch-release", "fetch", "f":
+		var releaseTag *string
+		if t := p.ReleaseTag; t != "" {
+			releaseTag = &t
+		}
+		return fetchRelease(ctx, w, releaseTag)
+	case "generate-formulae", "generate-formula", "generate", "gen", "g":
+		subFS, err := loadTemplatesSubdir()
+		if err != nil {
+			return err
+		}
+		return generateFormulae(r, subFS, p.Outdir)
+	default:
+		slog.Debug("received cmd", slog.String("cmd", cmd), slog.Any("args", f.Args()))
+		f.Usage()
+		return nil
+	}
+}
+
+//go:embed templates/*.tmpl
+var templateDirFS embed.FS
+
+func loadTemplatesSubdir() (fs.FS, error) {
+	subFS, err := fs.Sub(templateDirFS, "templates")
+	if err != nil {
+		return nil, fmt.Errorf("loading fs subdir: %w", err)
+	}
+	return subFS, nil
+}
+
 func fetchRelease(ctx context.Context, w io.Writer, releaseTag *string) error {
 	got, err := internal.FetchGithubRelease(ctx, releaseTag)
 	if err != nil {
@@ -108,10 +134,10 @@ func fetchRelease(ctx context.Context, w io.Writer, releaseTag *string) error {
 	return nil
 }
 
-func generateFormulae(templateDir string, r io.Reader, outputDir string) error {
+func generateFormulae(r io.Reader, templateDirFS fs.FS, outputDir string) error {
 	var releaseData internal.GithubRelease
 	if err := json.NewDecoder(r).Decode(&releaseData); err != nil {
 		return fmt.Errorf("decoding JSON release data: %w", err)
 	}
-	return internal.MakeFormulaeFiles(templateDir, outputDir, &releaseData)
+	return internal.MakeFormulaeFiles(templateDirFS, outputDir, &releaseData)
 }

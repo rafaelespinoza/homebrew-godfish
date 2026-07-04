@@ -2,6 +2,7 @@ package internal
 
 import (
 	"fmt"
+	"io/fs"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -9,22 +10,12 @@ import (
 	"text/template"
 )
 
-func MakeFormulaeFiles(templateDir, outdir string, releaseData *GithubRelease) error {
-	root, err := os.OpenRoot(templateDir)
-	if err != nil {
-		return fmt.Errorf("opening root: %w", err)
-	}
-	defer func() {
-		if cerr := root.Close(); cerr != nil {
-			slog.Error("closing root", slog.Any("error", cerr))
-		}
-	}()
-
+func MakeFormulaeFiles(templateDirFS fs.FS, outdir string, releaseData *GithubRelease) error {
 	funcs := template.FuncMap{
 		"bin_name": func(driverName string) string { return "godfish_" + driverName },
 		"join":     strings.Join,
 	}
-	tmpl, err := template.New("root").Funcs(funcs).ParseFS(root.FS(), "*.rb.tmpl")
+	tmpl, err := template.New("root").Funcs(funcs).ParseFS(templateDirFS, "*.rb.tmpl")
 	if err != nil {
 		return fmt.Errorf("parsing driver template fs: %w", err)
 	}

@@ -4,10 +4,11 @@ package internal
 import (
 	"context"
 	"fmt"
+	"io/fs"
 	"log/slog"
 )
 
-func FetchReleaseGenerateFormulae(ctx context.Context, templateDir, outdir, releaseTag string) error {
+func FetchReleaseGenerateFormulae(ctx context.Context, releaseTag string, templateDirFS fs.FS, outDir string) error {
 	var tag *string
 	if releaseTag != "" {
 		tag = &releaseTag
@@ -17,5 +18,5 @@ func FetchReleaseGenerateFormulae(ctx context.Context, templateDir, outdir, rele
 		return fmt.Errorf("fetching gh release: %w", err)
 	}
 	slog.DebugContext(ctx, "got release data", slog.Any("release", releaseData))
-	return MakeFormulaeFiles(templateDir, outdir, releaseData)
+	return MakeFormulaeFiles(templateDirFS, outDir, releaseData)
 }
