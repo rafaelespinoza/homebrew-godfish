@@ -29,9 +29,11 @@ class GodfishSqlserver < Formula
     # Homebrew extracts the entire multi-binary archive. Cherry-pick only
     # the targeted binaries into the installation path
     bin.install "godfish_sqlserver"
+    bin.install_symlink bin/"godfish_sqlserver" => "godfish-sqlserver"
   end
 
   test do
     assert_match(/Driver:.*sqlserver/, shell_output("#{bin}/godfish_sqlserver version 2>&1"))
+    assert_match(/Driver:.*sqlserver/, shell_output("#{bin}/godfish-sqlserver version 2>&1"))
   end
 end

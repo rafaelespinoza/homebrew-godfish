@@ -35,18 +35,24 @@ class Godfish < Formula
   def install
     # Homebrew extracts the entire multi-binary archive. Cherry-pick only
     # the targeted binaries into the installation path
-    bin.install "godfish_cassandra"
-    bin.install "godfish_postgres"
-    bin.install "godfish_mysql"
-    bin.install "godfish_sqlite3"
-    bin.install "godfish_sqlserver"
+    libexec.install "godfish_cassandra"
+    libexec.install "godfish_postgres"
+    libexec.install "godfish_mysql"
+    libexec.install "godfish_sqlite3"
+    libexec.install "godfish_sqlserver"
+
+    # Copy wrapper script.
+    script_dest_pathname = bin/"godfish"
+    script_dest_pathname.write(File.read("#{__dir__}/godfish"))
+    inreplace(script_dest_pathname, /LIBEXEC_DIR=.*$/, "LIBEXEC_DIR=#{libexec}")
+    chmod(0555, script_dest_pathname)
   end
 
   test do
-    assert_match(/Driver:.*cassandra/, shell_output("#{bin}/godfish_cassandra version 2>&1"))
-    assert_match(/Driver:.*postgres/, shell_output("#{bin}/godfish_postgres version 2>&1"))
-    assert_match(/Driver:.*mysql/, shell_output("#{bin}/godfish_mysql version 2>&1"))
-    assert_match(/Driver:.*sqlite3/, shell_output("#{bin}/godfish_sqlite3 version 2>&1"))
-    assert_match(/Driver:.*sqlserver/, shell_output("#{bin}/godfish_sqlserver version 2>&1"))
+    assert_match(/Driver:.*cassandra/, shell_output("#{bin}/godfish cassandra version 2>&1"))
+    assert_match(/Driver:.*postgres/, shell_output("#{bin}/godfish postgres version 2>&1"))
+    assert_match(/Driver:.*mysql/, shell_output("#{bin}/godfish mysql version 2>&1"))
+    assert_match(/Driver:.*sqlite3/, shell_output("#{bin}/godfish sqlite3 version 2>&1"))
+    assert_match(/Driver:.*sqlserver/, shell_output("#{bin}/godfish sqlserver version 2>&1"))
   end
 end

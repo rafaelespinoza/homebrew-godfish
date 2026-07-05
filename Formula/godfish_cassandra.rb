@@ -29,9 +29,11 @@ class GodfishCassandra < Formula
     # Homebrew extracts the entire multi-binary archive. Cherry-pick only
     # the targeted binaries into the installation path
     bin.install "godfish_cassandra"
+    bin.install_symlink bin/"godfish_cassandra" => "godfish-cassandra"
   end
 
   test do
     assert_match(/Driver:.*cassandra/, shell_output("#{bin}/godfish_cassandra version 2>&1"))
+    assert_match(/Driver:.*cassandra/, shell_output("#{bin}/godfish-cassandra version 2>&1"))
   end
 end

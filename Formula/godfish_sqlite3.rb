@@ -29,9 +29,11 @@ class GodfishSqlite3 < Formula
     # Homebrew extracts the entire multi-binary archive. Cherry-pick only
     # the targeted binaries into the installation path
     bin.install "godfish_sqlite3"
+    bin.install_symlink bin/"godfish_sqlite3" => "godfish-sqlite3"
   end
 
   test do
     assert_match(/Driver:.*sqlite3/, shell_output("#{bin}/godfish_sqlite3 version 2>&1"))
+    assert_match(/Driver:.*sqlite3/, shell_output("#{bin}/godfish-sqlite3 version 2>&1"))
   end
 end

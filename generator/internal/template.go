@@ -12,8 +12,9 @@ import (
 
 func MakeFormulaeFiles(templateDirFS fs.FS, outdir string, releaseData *GithubRelease) error {
 	funcs := template.FuncMap{
-		"bin_name": func(driverName string) string { return "godfish_" + driverName },
-		"join":     strings.Join,
+		"bin_name":    func(driverName string) string { return "godfish_" + driverName },
+		"bin_name_ln": func(driverName string) string { return "godfish-" + driverName },
+		"join":        strings.Join,
 		"quote_conflicting_formulae": func(driverNames []string) []string {
 			out := make([]string, len(driverNames))
 			for i, val := range driverNames {
@@ -22,7 +23,7 @@ func MakeFormulaeFiles(templateDirFS fs.FS, outdir string, releaseData *GithubRe
 			return out
 		},
 	}
-	tmpl, err := template.New("root").Funcs(funcs).ParseFS(templateDirFS, "*.rb.tmpl")
+	tmpl, err := template.New("root").Funcs(funcs).ParseFS(templateDirFS, "*.tmpl")
 	if err != nil {
 		return fmt.Errorf("parsing driver template fs: %w", err)
 	}
@@ -58,7 +59,7 @@ func MakeFormulaeFiles(templateDirFS fs.FS, outdir string, releaseData *GithubRe
 		outfile := filepath.Join(outdir, outfileBasename)
 
 		if err = generateFormulaFile(outfile, tmpl, formula); err != nil {
-			return fmt.Errorf("generating file (%q): %w", outfileBasename, err)
+			return fmt.Errorf("generating formula file (%q): %w", outfileBasename, err)
 		}
 	}
 

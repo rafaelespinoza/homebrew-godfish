@@ -29,9 +29,11 @@ class GodfishPostgres < Formula
     # Homebrew extracts the entire multi-binary archive. Cherry-pick only
     # the targeted binaries into the installation path
     bin.install "godfish_postgres"
+    bin.install_symlink bin/"godfish_postgres" => "godfish-postgres"
   end
 
   test do
     assert_match(/Driver:.*postgres/, shell_output("#{bin}/godfish_postgres version 2>&1"))
+    assert_match(/Driver:.*postgres/, shell_output("#{bin}/godfish-postgres version 2>&1"))
   end
 end

@@ -1,0 +1,48 @@
+#!/usr/bin/env sh
+
+usage() {
+	_usage_message="Usage: $(basename "${0}") <driver> [...arguments]
+
+Description:
+	This is a delegator script provided by the Homebrew installation of
+	the DB migration manager, godfish. It routes commands to the appropriate
+	driver binary isolated in libexec.
+
+	The upstream repository is:
+		https://github.com/rafaelespinoza/godfish
+	The Homebrew tap lives at:
+		https://github.com/rafaelespinoza/homebrew-godfish
+
+Drivers:
+	cassandra, postgres, mysql, sqlite3, sqlserver"
+
+	printf '%s\n' "${_usage_message}"
+}
+
+case "${1}" in
+cassandra | postgres | mysql | sqlite3 | sqlserver)
+	# keep going
+	;;
+"" | "-h" | "--help" | "help" | "-help")
+	usage >&2
+	exit 0
+	;;
+*)
+	usage >&2
+	exit 1
+	;;
+esac
+
+DRIVER=$1
+shift
+
+# This value may be replaced with a hardcoded value when doing `brew install`.
+LIBEXEC_DIR="$(brew --prefix godfish)/libexec"
+BINARY_NAME="${LIBEXEC_DIR}/godfish_${DRIVER}"
+
+if [ ! -x "${BINARY_NAME}" ]; then
+	printf "ERROR: unknown or uninstalled driver '%s'\n" "${DRIVER}" >&2
+	exit 1
+fi
+
+exec "${BINARY_NAME}" "${@}"
