@@ -3,7 +3,6 @@ class GodfishSqlserver < Formula
   homepage "https://github.com/rafaelespinoza/godfish"
   version "0.15.0"
   license "ISC"
-  conflicts_with "godfish", because: "the godfish formula already install the binary, godfish_sqlserver"
 
   if OS.mac? && Hardware::CPU.intel?
     url "https://github.com/rafaelespinoza/godfish/releases/download/v0.15.0/godfish_0.15.0_darwin_amd64.tar.gz"
@@ -27,13 +26,12 @@ class GodfishSqlserver < Formula
 
   def install
     # Homebrew extracts the entire multi-binary archive. Cherry-pick only
-    # the targeted binaries into the installation path
-    bin.install "godfish_sqlserver"
-    bin.install_symlink bin/"godfish_sqlserver" => "godfish-sqlserver"
+    # the targeted binary into the installation path. Also rename so it's
+    # more conventionally-cased.
+    bin.install "godfish_sqlserver" => "godfish-sqlserver"
   end
 
   test do
-    assert_match(/Driver:.*sqlserver/, shell_output("#{bin}/godfish_sqlserver version 2>&1"))
     assert_match(/Driver:.*sqlserver/, shell_output("#{bin}/godfish-sqlserver version 2>&1"))
   end
 end

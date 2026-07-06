@@ -12,16 +12,9 @@ import (
 
 func MakeFormulaeFiles(templateDirFS fs.FS, outdir string, releaseData *GithubRelease) error {
 	funcs := template.FuncMap{
-		"bin_name":    func(driverName string) string { return "godfish_" + driverName },
-		"bin_name_ln": func(driverName string) string { return "godfish-" + driverName },
-		"join":        strings.Join,
-		"quote_conflicting_formulae": func(driverNames []string) []string {
-			out := make([]string, len(driverNames))
-			for i, val := range driverNames {
-				out[i] = fmt.Sprintf("%q", "godfish_"+val)
-			}
-			return out
-		},
+		"bin_name_upstream":     func(driverName string) string { return "godfish_" + driverName },
+		"bin_name_brew_install": func(driverName string) string { return "godfish-" + driverName },
+		"join":                  strings.Join,
 	}
 	tmpl, err := template.New("root").Funcs(funcs).ParseFS(templateDirFS, "*.tmpl")
 	if err != nil {

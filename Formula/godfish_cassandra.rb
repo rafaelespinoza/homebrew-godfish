@@ -3,7 +3,6 @@ class GodfishCassandra < Formula
   homepage "https://github.com/rafaelespinoza/godfish"
   version "0.15.0"
   license "ISC"
-  conflicts_with "godfish", because: "the godfish formula already install the binary, godfish_cassandra"
 
   if OS.mac? && Hardware::CPU.intel?
     url "https://github.com/rafaelespinoza/godfish/releases/download/v0.15.0/godfish_0.15.0_darwin_amd64.tar.gz"
@@ -27,13 +26,12 @@ class GodfishCassandra < Formula
 
   def install
     # Homebrew extracts the entire multi-binary archive. Cherry-pick only
-    # the targeted binaries into the installation path
-    bin.install "godfish_cassandra"
-    bin.install_symlink bin/"godfish_cassandra" => "godfish-cassandra"
+    # the targeted binary into the installation path. Also rename so it's
+    # more conventionally-cased.
+    bin.install "godfish_cassandra" => "godfish-cassandra"
   end
 
   test do
-    assert_match(/Driver:.*cassandra/, shell_output("#{bin}/godfish_cassandra version 2>&1"))
     assert_match(/Driver:.*cassandra/, shell_output("#{bin}/godfish-cassandra version 2>&1"))
   end
 end

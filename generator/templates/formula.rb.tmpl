@@ -9,17 +9,6 @@ class {{.ClassName}} < Formula
   homepage "https://github.com/rafaelespinoza/godfish"
   version "{{.Version}}"
   license "ISC"
-  {{if eq $num_drivers 1 -}}
-  {{$name_of_bin := bin_name (index .Drivers 0) -}}
-  {{$reason := printf "the godfish formula already install the binary, %s" $name_of_bin -}}
-  conflicts_with "godfish", because: "{{$reason}}"
-  {{- else -}}
-  {{$driver_formulae_names := quote_conflicting_formulae .Drivers -}}
-  conflicts_with(
-    {{join $driver_formulae_names ",\n    "}},
-    because: "each driver formula (godfish_*) already installs a binary of the same name",
-  )
-  {{- end}}
 
   if OS.mac? && Hardware::CPU.intel?
     {{$release := .ReleaseAssets.MacOSIntel -}}
@@ -60,16 +49,16 @@ class {{.ClassName}} < Formula
   */}}
 
   def install
-    # Homebrew extracts the entire multi-binary archive. Cherry-pick only
-    # the targeted binaries into the installation path
     {{- if eq $num_drivers 1}}
+    # Homebrew extracts the entire multi-binary archive. Cherry-pick only
+    # the targeted binary into the installation path. Also rename so it's
+    # more conventionally-cased.
     {{$driver := index .Drivers 0 -}}
-    {{$name_of_bin := bin_name $driver -}}
-    bin.install "{{$name_of_bin}}"
-    bin.install_symlink bin/"{{$name_of_bin}}" => "{{bin_name_ln $driver}}"
-    {{- else -}}
+    bin.install "{{bin_name_upstream $driver}}" => "{{bin_name_brew_install $driver}}"
+    {{- else}}
+    # The copied wrapper script will look up binaries in this directory.
     {{- range .Drivers}}
-    libexec.install "{{bin_name .}}"
+    libexec.install "{{bin_name_upstream .}}"
     {{- end}}
 
     # Copy wrapper script.
@@ -83,8 +72,7 @@ class {{.ClassName}} < Formula
   test do
     {{- if eq $num_drivers 1}}
     {{$driver := index .Drivers 0 -}}
-    assert_match(/Driver:.*{{$driver}}/, shell_output("#{bin}/{{bin_name $driver}} version 2>&1"))
-    assert_match(/Driver:.*{{$driver}}/, shell_output("#{bin}/{{bin_name_ln $driver}} version 2>&1"))
+    assert_match(/Driver:.*{{$driver}}/, shell_output("#{bin}/{{bin_name_brew_install $driver}} version 2>&1"))
     {{- else -}}
     {{- range .Drivers}}
     assert_match(/Driver:.*{{.}}/, shell_output("#{bin}/godfish {{.}} version 2>&1"))

@@ -3,14 +3,6 @@ class Godfish < Formula
   homepage "https://github.com/rafaelespinoza/godfish"
   version "0.15.0"
   license "ISC"
-  conflicts_with(
-    "godfish_cassandra",
-    "godfish_postgres",
-    "godfish_mysql",
-    "godfish_sqlite3",
-    "godfish_sqlserver",
-    because: "each driver formula (godfish_*) already installs a binary of the same name",
-  )
 
   if OS.mac? && Hardware::CPU.intel?
     url "https://github.com/rafaelespinoza/godfish/releases/download/v0.15.0/godfish_0.15.0_darwin_amd64.tar.gz"
@@ -33,8 +25,7 @@ class Godfish < Formula
   end
 
   def install
-    # Homebrew extracts the entire multi-binary archive. Cherry-pick only
-    # the targeted binaries into the installation path
+    # The copied wrapper script will look up binaries in this directory.
     libexec.install "godfish_cassandra"
     libexec.install "godfish_postgres"
     libexec.install "godfish_mysql"

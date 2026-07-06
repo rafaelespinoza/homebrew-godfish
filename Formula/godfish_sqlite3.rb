@@ -3,7 +3,6 @@ class GodfishSqlite3 < Formula
   homepage "https://github.com/rafaelespinoza/godfish"
   version "0.15.0"
   license "ISC"
-  conflicts_with "godfish", because: "the godfish formula already install the binary, godfish_sqlite3"
 
   if OS.mac? && Hardware::CPU.intel?
     url "https://github.com/rafaelespinoza/godfish/releases/download/v0.15.0/godfish_0.15.0_darwin_amd64.tar.gz"
@@ -27,13 +26,12 @@ class GodfishSqlite3 < Formula
 
   def install
     # Homebrew extracts the entire multi-binary archive. Cherry-pick only
-    # the targeted binaries into the installation path
-    bin.install "godfish_sqlite3"
-    bin.install_symlink bin/"godfish_sqlite3" => "godfish-sqlite3"
+    # the targeted binary into the installation path. Also rename so it's
+    # more conventionally-cased.
+    bin.install "godfish_sqlite3" => "godfish-sqlite3"
   end
 
   test do
-    assert_match(/Driver:.*sqlite3/, shell_output("#{bin}/godfish_sqlite3 version 2>&1"))
     assert_match(/Driver:.*sqlite3/, shell_output("#{bin}/godfish-sqlite3 version 2>&1"))
   end
 end
