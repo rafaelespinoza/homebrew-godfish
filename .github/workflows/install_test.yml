@@ -16,11 +16,11 @@ jobs:
           - macos-26
         formula:
           - godfish
-          - godfish_cassandra
-          - godfish_mysql
-          - godfish_postgres
-          - godfish_sqlite3
-          - godfish_sqlserver
+          - godfish-cassandra
+          - godfish-mysql
+          - godfish-postgres
+          - godfish-sqlite3
+          - godfish-sqlserver
     runs-on: ${{ matrix.os }}
     permissions:
       contents: read

@@ -45,7 +45,7 @@ func MakeFormulaeFiles(templateDirFS fs.FS, outdir string, releaseData *GithubRe
 
 		var outfileBasename string
 		if len(formula.Drivers) == 1 {
-			outfileBasename = "godfish_" + formula.Drivers[0] + ".rb"
+			outfileBasename = "godfish-" + formula.Drivers[0] + ".rb"
 		} else {
 			outfileBasename = "godfish.rb"
 		}
