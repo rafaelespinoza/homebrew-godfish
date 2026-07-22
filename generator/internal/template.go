@@ -11,10 +11,12 @@ import (
 )
 
 func MakeFormulaeFiles(templateDirFS fs.FS, outdir string, releaseData *GithubRelease) error {
+	const mainName = "godfish"
+
 	funcs := template.FuncMap{
-		"bin_name_upstream":     func(driverName string) string { return "godfish_" + driverName },
-		"bin_name_brew_install": func(driverName string) string { return "godfish-" + driverName },
-		"join":                  strings.Join,
+		"bin_name_main":   func() string { return mainName },
+		"bin_name_driver": func(driverName string) string { return mainName + "-" + driverName },
+		"join":            strings.Join,
 	}
 	tmpl, err := template.New("root").Funcs(funcs).ParseFS(templateDirFS, "*.tmpl")
 	if err != nil {

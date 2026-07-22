@@ -1,49 +1,46 @@
 class Godfish < Formula
   desc "Database migrations CLIs for cassandra, postgres, mysql, sqlite3, sqlserver"
   homepage "https://github.com/rafaelespinoza/godfish"
-  version "0.15.0"
+  version "0.16.0"
   license "ISC"
 
   if OS.mac? && Hardware::CPU.intel?
-    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.15.0/godfish_0.15.0_darwin_amd64.tar.gz"
-    sha256 "67221b8c8547ab56ff1950124275540d3dcb9d1708d975b4e7faad68f7bb5b25"
+    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.16.0/godfish_0.16.0_darwin_amd64.tar.gz"
+    sha256 "7ae0a5711b402d505763209406b20d9336631a04d238a2503b45b7f77e9b5cb7"
   end
 
   if OS.mac? && Hardware::CPU.arm?
-    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.15.0/godfish_0.15.0_darwin_arm64.tar.gz"
-    sha256 "fe51c1d40607e4be7be076509d2c10b48900f4a8b6ccae75eb7f52b19b5a20f9"
+    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.16.0/godfish_0.16.0_darwin_arm64.tar.gz"
+    sha256 "cfacc2dece17883f416853cf54051a20e86e3513741f87d1d5a9f1b5f4864c3e"
   end
 
   if OS.linux? && Hardware::CPU.intel?
-    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.15.0/godfish_0.15.0_linux_amd64.tar.gz"
-    sha256 "e6598dd1a5cb7add672c7b07341c0ea9e28448ab50d697a42a788b16cd87c154"
+    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.16.0/godfish_0.16.0_linux_amd64.tar.gz"
+    sha256 "487f1457965bbc2586dc601bb6f020237255f88a35787cf2d985a48961e5e156"
   end
 
   if OS.linux? && Hardware::CPU.arm?
-    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.15.0/godfish_0.15.0_linux_arm64.tar.gz"
-    sha256 "b4fd5e3689812546b617f30d90d21f1d6d6da4f34e7d9b0f704e5c7a897460a3"
+    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.16.0/godfish_0.16.0_linux_arm64.tar.gz"
+    sha256 "64b930097eecc8930f6ba0c34adc1b48061cb993cb7d6a64155a102ac1d553eb"
   end
 
   def install
-    # The copied wrapper script will look up binaries in this directory.
-    libexec.install "godfish_cassandra"
-    libexec.install "godfish_postgres"
-    libexec.install "godfish_mysql"
-    libexec.install "godfish_sqlite3"
-    libexec.install "godfish_sqlserver"
+    bin.install "godfish"
 
-    # Copy wrapper script.
-    script_dest_pathname = bin/"godfish"
-    script_dest_pathname.write(File.read("#{__dir__}/godfish"))
-    inreplace(script_dest_pathname, /LIBEXEC_DIR=.*$/, "LIBEXEC_DIR=#{libexec}")
-    chmod(0555, script_dest_pathname)
+    # Copy shell autocompletion scripts.
+    src_autocomplete_dir = "completions"
+    bash_completion.install "#{src_autocomplete_dir}/godfish.bash" => "godfish"
+    fish_completion.install "#{src_autocomplete_dir}/godfish.fish" => "godfish.fish"
+    zsh_completion.install "#{src_autocomplete_dir}/godfish.zsh" => "_godfish"
   end
 
   test do
-    assert_match(/Driver:.*cassandra/, shell_output("#{bin}/godfish cassandra version 2>&1"))
-    assert_match(/Driver:.*postgres/, shell_output("#{bin}/godfish postgres version 2>&1"))
-    assert_match(/Driver:.*mysql/, shell_output("#{bin}/godfish mysql version 2>&1"))
-    assert_match(/Driver:.*sqlite3/, shell_output("#{bin}/godfish sqlite3 version 2>&1"))
-    assert_match(/Driver:.*sqlserver/, shell_output("#{bin}/godfish sqlserver version 2>&1"))
+    %w[cassandra postgres mysql sqlite3 sqlserver].each do |driver|
+      # Execute the main godfish cmd for each driver name
+      output = shell_output("#{bin}/godfish #{driver} version 2>&1")
+
+      # Assert the output matches the expected /Driver:.*${driver_name}/ pattern
+      assert_match(/Driver:.*#{driver}/, output)
+    end
   end
 end

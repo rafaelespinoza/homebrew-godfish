@@ -51,32 +51,38 @@ class {{.ClassName}} < Formula
   def install
     {{- if eq $num_drivers 1}}
     # Homebrew extracts the entire multi-binary archive. Cherry-pick only
-    # the targeted binary into the installation path. Also rename so it's
-    # more conventionally-cased.
+    # the targeted binary into the installation path.
     {{$driver := index .Drivers 0 -}}
-    bin.install "{{bin_name_upstream $driver}}" => "{{bin_name_brew_install $driver}}"
-    {{- else}}
-    # The copied wrapper script will look up binaries in this directory.
-    {{- range .Drivers}}
-    libexec.install "{{bin_name_upstream .}}"
-    {{- end}}
+    driver_bin = "{{bin_name_driver $driver}}"
+    bin.install driver_bin
 
-    # Copy wrapper script.
-    script_dest_pathname = bin/"godfish"
-    script_dest_pathname.write(File.read("#{__dir__}/godfish"))
-    inreplace(script_dest_pathname, /LIBEXEC_DIR=.*$/, "LIBEXEC_DIR=#{libexec}")
-    chmod(0555, script_dest_pathname)
+    # Generate, install shell autocompletion scripts.
+    %w[bash fish zsh].each do |sh|
+      generate_completions_from_executable(bin/driver_bin.to_s, "completion", sh, shells: [sh.to_sym])
+    end
+    {{- else}}
+    bin.install "{{bin_name_main}}"
+
+    # Copy shell autocompletion scripts.
+    src_autocomplete_dir = "completions"
+    bash_completion.install "#{src_autocomplete_dir}/godfish.bash" => "godfish"
+    fish_completion.install "#{src_autocomplete_dir}/godfish.fish" => "godfish.fish"
+    zsh_completion.install "#{src_autocomplete_dir}/godfish.zsh" => "_godfish"
     {{- end}}
   end
 
   test do
     {{- if eq $num_drivers 1}}
     {{$driver := index .Drivers 0 -}}
-    assert_match(/Driver:.*{{$driver}}/, shell_output("#{bin}/{{bin_name_brew_install $driver}} version 2>&1"))
-    {{- else -}}
-    {{- range .Drivers}}
-    assert_match(/Driver:.*{{.}}/, shell_output("#{bin}/godfish {{.}} version 2>&1"))
-    {{- end}}
+    assert_match(/Driver:.*{{$driver}}/, shell_output("#{bin}/{{bin_name_driver $driver}} version 2>&1"))
+    {{- else}}
+    %w[{{join .Drivers " "}}].each do |driver|
+      # Execute the main godfish cmd for each driver name
+      output = shell_output("#{bin}/godfish #{driver} version 2>&1")
+
+      # Assert the output matches the expected /Driver:.*${driver_name}/ pattern
+      assert_match(/Driver:.*#{driver}/, output)
+    end
     {{- end}}
   end
 end

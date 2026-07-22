@@ -1,34 +1,39 @@
 class GodfishPostgres < Formula
   desc "Database migrations CLI for postgres"
   homepage "https://github.com/rafaelespinoza/godfish"
-  version "0.15.0"
+  version "0.16.0"
   license "ISC"
 
   if OS.mac? && Hardware::CPU.intel?
-    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.15.0/godfish_0.15.0_darwin_amd64.tar.gz"
-    sha256 "67221b8c8547ab56ff1950124275540d3dcb9d1708d975b4e7faad68f7bb5b25"
+    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.16.0/godfish_0.16.0_darwin_amd64.tar.gz"
+    sha256 "7ae0a5711b402d505763209406b20d9336631a04d238a2503b45b7f77e9b5cb7"
   end
 
   if OS.mac? && Hardware::CPU.arm?
-    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.15.0/godfish_0.15.0_darwin_arm64.tar.gz"
-    sha256 "fe51c1d40607e4be7be076509d2c10b48900f4a8b6ccae75eb7f52b19b5a20f9"
+    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.16.0/godfish_0.16.0_darwin_arm64.tar.gz"
+    sha256 "cfacc2dece17883f416853cf54051a20e86e3513741f87d1d5a9f1b5f4864c3e"
   end
 
   if OS.linux? && Hardware::CPU.intel?
-    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.15.0/godfish_0.15.0_linux_amd64.tar.gz"
-    sha256 "e6598dd1a5cb7add672c7b07341c0ea9e28448ab50d697a42a788b16cd87c154"
+    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.16.0/godfish_0.16.0_linux_amd64.tar.gz"
+    sha256 "487f1457965bbc2586dc601bb6f020237255f88a35787cf2d985a48961e5e156"
   end
 
   if OS.linux? && Hardware::CPU.arm?
-    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.15.0/godfish_0.15.0_linux_arm64.tar.gz"
-    sha256 "b4fd5e3689812546b617f30d90d21f1d6d6da4f34e7d9b0f704e5c7a897460a3"
+    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.16.0/godfish_0.16.0_linux_arm64.tar.gz"
+    sha256 "64b930097eecc8930f6ba0c34adc1b48061cb993cb7d6a64155a102ac1d553eb"
   end
 
   def install
     # Homebrew extracts the entire multi-binary archive. Cherry-pick only
-    # the targeted binary into the installation path. Also rename so it's
-    # more conventionally-cased.
-    bin.install "godfish_postgres" => "godfish-postgres"
+    # the targeted binary into the installation path.
+    driver_bin = "godfish-postgres"
+    bin.install driver_bin
+
+    # Generate, install shell autocompletion scripts.
+    %w[bash fish zsh].each do |sh|
+      generate_completions_from_executable(bin/driver_bin.to_s, "completion", sh, shells: [sh.to_sym])
+    end
   end
 
   test do
