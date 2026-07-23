@@ -1,11 +1,7 @@
 {{define "formula" -}}
 class {{.ClassName}} < Formula
   {{$num_drivers := len .Drivers -}}
-  {{$desc := printf "Database migrations CLIs for %s" (join .Drivers ", ") -}}
-  {{if eq $num_drivers 1 -}}
-  {{$desc = printf "Database migrations CLI for %s" (index .Drivers 0) -}}
-  {{end -}}
-  desc "{{$desc}}"
+  desc "{{printf "Database migrations CLI for %s" (join .Drivers ", ") -}}"
   homepage "https://github.com/rafaelespinoza/godfish"
   version "{{.Version}}"
   license "ISC"
