@@ -1,27 +1,26 @@
 class GodfishCassandra < Formula
   desc "Database migrations CLI for cassandra"
   homepage "https://github.com/rafaelespinoza/godfish"
-  version "0.16.1"
   license "ISC"
 
   if OS.mac? && Hardware::CPU.intel?
-    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.16.1/godfish_0.16.1_darwin_amd64.tar.gz"
-    sha256 "4be4efc2a1e2be6c3fb7ad6a098c9f67595a94213134870d32c78e15579d8cb3"
+    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.17.0/godfish_0.17.0_darwin_amd64.tar.gz"
+    sha256 "f557c160055bb3a85f35ff255031c666d259aa1071c737414747ce15eccbdd22"
   end
 
   if OS.mac? && Hardware::CPU.arm?
-    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.16.1/godfish_0.16.1_darwin_arm64.tar.gz"
-    sha256 "961ae77c0f40b45b7ab39fb8e232f8b4e1ef2d3c3d14a250b53b0a7661d374e9"
+    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.17.0/godfish_0.17.0_darwin_arm64.tar.gz"
+    sha256 "9c10a9b9980e2b00ae16e7b55dbaef45f15b68884b9f082a0ca01f66143b9352"
   end
 
   if OS.linux? && Hardware::CPU.intel?
-    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.16.1/godfish_0.16.1_linux_amd64.tar.gz"
-    sha256 "d0526260cc037044140e07cc6864f13b32ad9d174c2973038ff80adcef35d1db"
+    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.17.0/godfish_0.17.0_linux_amd64.tar.gz"
+    sha256 "2485e061cd5946d0fa876abb8eccc1d3a982562d04d711141623bdae6e77a231"
   end
 
   if OS.linux? && Hardware::CPU.arm?
-    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.16.1/godfish_0.16.1_linux_arm64.tar.gz"
-    sha256 "ff3de7d70d53cc4f0387f013c147df2001571fc1a2a0def4a7bd61dda2af4a0c"
+    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.17.0/godfish_0.17.0_linux_arm64.tar.gz"
+    sha256 "dd18f951f942014c0d66a3a71a0e27a6ac797ea7a38fbeedebd9f5a92a8313e0"
   end
 
   def install

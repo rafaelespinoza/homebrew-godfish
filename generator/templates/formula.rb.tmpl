@@ -3,7 +3,6 @@ class {{.ClassName}} < Formula
   {{$num_drivers := len .Drivers -}}
   desc "{{printf "Database migrations CLI for %s" (join .Drivers ", ") -}}"
   homepage "https://github.com/rafaelespinoza/godfish"
-  version "{{.Version}}"
   license "ISC"
 
   if OS.mac? && Hardware::CPU.intel?
