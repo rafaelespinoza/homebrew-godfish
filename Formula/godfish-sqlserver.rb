@@ -4,23 +4,23 @@ class GodfishSqlserver < Formula
   license "ISC"
 
   if OS.mac? && Hardware::CPU.intel?
-    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.17.0/godfish_0.17.0_darwin_amd64.tar.gz"
-    sha256 "f557c160055bb3a85f35ff255031c666d259aa1071c737414747ce15eccbdd22"
+    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.18.0/godfish_0.18.0_darwin_amd64.tar.gz"
+    sha256 "d8a81b5993f2e216f276109eed48e5f0971eb4094759afaaa302904d7a275b57"
   end
 
   if OS.mac? && Hardware::CPU.arm?
-    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.17.0/godfish_0.17.0_darwin_arm64.tar.gz"
-    sha256 "9c10a9b9980e2b00ae16e7b55dbaef45f15b68884b9f082a0ca01f66143b9352"
+    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.18.0/godfish_0.18.0_darwin_arm64.tar.gz"
+    sha256 "83a872492ff88902150ab9bf9c46830867746c3e091b6df440dcb098e63d3006"
   end
 
   if OS.linux? && Hardware::CPU.intel?
-    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.17.0/godfish_0.17.0_linux_amd64.tar.gz"
-    sha256 "2485e061cd5946d0fa876abb8eccc1d3a982562d04d711141623bdae6e77a231"
+    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.18.0/godfish_0.18.0_linux_amd64.tar.gz"
+    sha256 "071818c3f1e1ba255379c29c55066bcea8bf45132c254d4e6c3292bad6889e8b"
   end
 
   if OS.linux? && Hardware::CPU.arm?
-    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.17.0/godfish_0.17.0_linux_arm64.tar.gz"
-    sha256 "dd18f951f942014c0d66a3a71a0e27a6ac797ea7a38fbeedebd9f5a92a8313e0"
+    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.18.0/godfish_0.18.0_linux_arm64.tar.gz"
+    sha256 "5b4afdd6ae20ed81db74183794dd136debc57a1741ddc62a24776f0786aadcbc"
   end
 
   def install
