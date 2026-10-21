@@ -4,23 +4,23 @@ class GodfishSqlite3 < Formula
   license "ISC"
 
   if OS.mac? && Hardware::CPU.intel?
-    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.18.0/godfish_0.18.0_darwin_amd64.tar.gz"
-    sha256 "d8a81b5993f2e216f276109eed48e5f0971eb4094759afaaa302904d7a275b57"
+    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.18.1/godfish_0.18.1_darwin_amd64.tar.gz"
+    sha256 "a850026a78907faf601143f709cafd391119dd356909964e9984cf699d03cc02"
   end
 
   if OS.mac? && Hardware::CPU.arm?
-    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.18.0/godfish_0.18.0_darwin_arm64.tar.gz"
-    sha256 "83a872492ff88902150ab9bf9c46830867746c3e091b6df440dcb098e63d3006"
+    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.18.1/godfish_0.18.1_darwin_arm64.tar.gz"
+    sha256 "76bc3782626eefe6fc39540ff97e0b884b765c6001deb7ff89b8c551cedd9d0f"
   end
 
   if OS.linux? && Hardware::CPU.intel?
-    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.18.0/godfish_0.18.0_linux_amd64.tar.gz"
-    sha256 "071818c3f1e1ba255379c29c55066bcea8bf45132c254d4e6c3292bad6889e8b"
+    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.18.1/godfish_0.18.1_linux_amd64.tar.gz"
+    sha256 "d6106b0f71267e920d863a27ea1d7c96781a0771fe518ffb7a9e4cd589428842"
   end
 
   if OS.linux? && Hardware::CPU.arm?
-    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.18.0/godfish_0.18.0_linux_arm64.tar.gz"
-    sha256 "5b4afdd6ae20ed81db74183794dd136debc57a1741ddc62a24776f0786aadcbc"
+    url "https://github.com/rafaelespinoza/godfish/releases/download/v0.18.1/godfish_0.18.1_linux_arm64.tar.gz"
+    sha256 "9113c0146039d97b87eb03e7f5fa4421d8e59f6909021dc560b998307435d3d7"
   end
 
   def install
